@@ -1,8 +1,9 @@
-import type { AnswerRecord, Question, QuizPhase } from '../types'
+import type { AnswerRecord, QuizPhase } from '../types'
+import type { PreparedQuestion } from '../utils/prepare'
 import { TiltCard } from './TiltCard'
 
 interface QuestionCardProps {
-  question: Question
+  question: PreparedQuestion
   phase: QuizPhase
   lastAnswer?: AnswerRecord
   onSelect: (index: number) => void
