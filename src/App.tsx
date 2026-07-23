@@ -6,6 +6,7 @@ import { Timer } from './components/Timer'
 import { ProgressBar } from './components/ProgressBar'
 import { ResultScreen } from './components/ResultScreen'
 import { HistoryPanel } from './components/HistoryPanel'
+import { FeedbackLink } from './components/FeedbackLink'
 import { ThemeProvider } from './context/ThemeContext'
 import { useQuizEngine } from './hooks/useQuizEngine'
 import { buildAttempt } from './utils/scoring'
@@ -91,6 +92,7 @@ function QuizApp() {
 
       <footer className="app-footer">
         <span>Built for BIM Insights — feedback welcome.</span>
+        <FeedbackLink variant="footer" />
       </footer>
     </div>
   )

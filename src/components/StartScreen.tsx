@@ -1,3 +1,4 @@
+import { CATEGORIES } from '../data/categories'
 import { QUESTION_TIME_SECONDS, TOTAL_QUESTIONS } from '../data/questions'
 import type { Attempt } from '../types'
 import { TiltCard } from './TiltCard'
@@ -8,14 +9,13 @@ export function StartScreen({ onStart, bestAttempt }: { onStart: () => void; bes
       <p className="eyebrow">Free · {TOTAL_QUESTIONS} questions · {QUESTION_TIME_SECONDS}s each</p>
       <h1>The BIM Insight Quiz</h1>
       <p className="lede">
-        Test yourself on Revit, Navisworks, coordination workflows, and ISO 19650 — the stuff that
-        actually comes up in interviews and on-site coordination meetings.
+        Test yourself across the software, plugins, and add-ins that run the AEC industry — Revit,
+        AutoCAD &amp; Civil 3D, Navisworks, Rhino &amp; Grasshopper, Dynamo, ACC / BIM 360, and more.
       </p>
       <ul className="topic-chips">
-        <li>Revit</li>
-        <li>Navisworks</li>
-        <li>BIM Coordination</li>
-        <li>ISO 19650</li>
+        {CATEGORIES.map((c) => (
+          <li key={c}>{c}</li>
+        ))}
       </ul>
       {bestAttempt && (
         <p className="best-score">

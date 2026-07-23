@@ -3,6 +3,7 @@ import { questions } from '../data/questions'
 import type { Attempt, QuizState } from '../types'
 import { hasUnlockedExplanations } from '../utils/storage'
 import { EmailGate } from './EmailGate'
+import { FeedbackLink } from './FeedbackLink'
 import { ShareButtons } from './ShareButtons'
 import { TiltCard } from './TiltCard'
 
@@ -58,6 +59,7 @@ export function ResultScreen({
           <button type="button" className="btn-primary" onClick={onRestart}>
             Play again
           </button>
+          <FeedbackLink variant="button" />
         </div>
       </TiltCard>
 

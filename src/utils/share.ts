@@ -4,7 +4,7 @@ export const SITE_URL = 'https://koliaashu2003-bot.github.io/BIM-INSIGHT/'
 
 export function shareText(attempt: Attempt): string {
   const pct = Math.round(attempt.accuracy * 100)
-  return `I scored ${attempt.score}/${attempt.total} (${pct}%) on the BIM Insight Quiz — Revit, Navisworks, coordination & ISO 19650. Think you can beat it?`
+  return `I scored ${attempt.score}/${attempt.total} (${pct}%) on the BIM Insight Quiz — Revit, AutoCAD, Navisworks, Rhino/Grasshopper, Dynamo, ACC & more. Think you can beat it?`
 }
 
 export function whatsappUrl(attempt: Attempt): string {
@@ -54,30 +54,30 @@ export function renderResultImage(attempt: Attempt): Promise<Blob | null> {
   ctx.fillText('BIM INSIGHT QUIZ', 70, 90)
 
   ctx.fillStyle = '#f8fafc'
-  ctx.font = '700 160px system-ui, sans-serif'
-  ctx.fillText(`${attempt.score}/${attempt.total}`, 70, 300)
+  ctx.font = '700 130px system-ui, sans-serif'
+  ctx.fillText(`${attempt.score}/${attempt.total}`, 70, 260)
 
   const pct = Math.round(attempt.accuracy * 100)
   ctx.fillStyle = '#e2e8f0'
-  ctx.font = '500 40px system-ui, sans-serif'
-  ctx.fillText(`${pct}% accuracy`, 70, 370)
+  ctx.font = '500 36px system-ui, sans-serif'
+  ctx.fillText(`${pct}% accuracy`, 70, 316)
 
   const categories = Object.entries(attempt.categoryBreakdown)
-  let y = 440
-  ctx.font = '500 26px system-ui, sans-serif'
+  let y = 380
+  ctx.font = '500 22px system-ui, sans-serif'
   for (const [cat, stats] of categories) {
     ctx.fillStyle = '#94a3b8'
     ctx.fillText(cat, 70, y)
-    const barX = 320
-    const barW = 300
+    const barX = 360
+    const barW = 240
     ctx.fillStyle = 'rgba(148, 163, 184, 0.25)'
-    ctx.fillRect(barX, y - 20, barW, 20)
+    ctx.fillRect(barX, y - 16, barW, 16)
     ctx.fillStyle = '#5eead4'
     const ratio = stats.total > 0 ? stats.correct / stats.total : 0
-    ctx.fillRect(barX, y - 20, barW * ratio, 20)
+    ctx.fillRect(barX, y - 16, barW * ratio, 16)
     ctx.fillStyle = '#e2e8f0'
-    ctx.fillText(`${stats.correct}/${stats.total}`, barX + barW + 20, y)
-    y += 42
+    ctx.fillText(`${stats.correct}/${stats.total}`, barX + barW + 16, y)
+    y += 30
   }
 
   ctx.fillStyle = '#5eead4'
