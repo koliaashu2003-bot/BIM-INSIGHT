@@ -1,7 +1,6 @@
+import { CATEGORIES } from '../data/categories'
 import { questions } from '../data/questions'
 import type { Attempt, Category, QuizState } from '../types'
-
-const CATEGORIES: Category[] = ['Revit', 'Navisworks', 'Coordination', 'ISO 19650']
 
 export function buildAttempt(state: QuizState): Attempt {
   const total = state.answers.length

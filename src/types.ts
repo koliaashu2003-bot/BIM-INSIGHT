@@ -1,4 +1,11 @@
-export type Category = 'Revit' | 'Navisworks' | 'Coordination' | 'ISO 19650'
+export type Category =
+  | 'Revit'
+  | 'AutoCAD & Civil 3D'
+  | 'Navisworks'
+  | 'Rhino & Grasshopper'
+  | 'Dynamo'
+  | 'ACC & BIM 360'
+  | 'Add-ins & Plugins'
 
 export interface Question {
   id: number
