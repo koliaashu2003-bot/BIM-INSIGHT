@@ -1,8 +1,8 @@
 import type { Attempt } from '../types'
+import { EMAIL_CAPTURE_URL } from '../config'
 
 const HISTORY_KEY = 'bim-quiz:history'
 const EMAILS_KEY = 'bim-quiz:emails'
-const THEME_KEY = 'bim-quiz:theme'
 
 export function loadHistory(): Attempt[] {
   try {
@@ -23,9 +23,9 @@ export function clearHistory(): void {
   localStorage.removeItem(HISTORY_KEY)
 }
 
-// Client-only capture: persisted to this browser's localStorage.
-// To wire up a real mailing list, POST `email` to your ESP here
-// (Mailchimp, ConvertKit, Formspree, etc.) in addition to/instead of this.
+// Captures an email. If EMAIL_CAPTURE_URL is configured (e.g. a Formspree
+// endpoint), the email is POSTed there so you actually receive it; otherwise
+// it falls back to this browser's localStorage only (prototype behaviour).
 export function saveEmail(email: string): void {
   try {
     const raw = localStorage.getItem(EMAILS_KEY)
@@ -37,20 +37,19 @@ export function saveEmail(email: string): void {
   } catch {
     // localStorage unavailable (private mode, quota) — non-fatal, gate still unlocks
   }
+
+  if (EMAIL_CAPTURE_URL) {
+    // Fire-and-forget; Formspree and similar accept JSON.
+    fetch(EMAIL_CAPTURE_URL, {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json', Accept: 'application/json' },
+      body: JSON.stringify({ email, source: 'bim-insight-quiz' }),
+    }).catch(() => {
+      /* offline / blocked — the localStorage copy above still stands */
+    })
+  }
 }
 
 export function hasUnlockedExplanations(): boolean {
   return localStorage.getItem(EMAILS_KEY) !== null
-}
-
-export type ThemeName = 'light' | 'dark'
-
-export function loadTheme(): ThemeName {
-  const stored = localStorage.getItem(THEME_KEY)
-  if (stored === 'light' || stored === 'dark') return stored
-  return window.matchMedia?.('(prefers-color-scheme: dark)').matches ? 'dark' : 'light'
-}
-
-export function saveTheme(theme: ThemeName): void {
-  localStorage.setItem(THEME_KEY, theme)
 }
