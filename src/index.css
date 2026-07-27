@@ -599,3 +599,13 @@ button { font: inherit; }
 .comment-list li { font-size: 0.85rem; }
 .comment-author { font-weight: 700; margin-right: 6px; color: var(--accent-ink); }
 .comment-text { color: var(--muted); }
+
+/* ---------------- upload metadata / tags ---------------- */
+.field-row { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; }
+@media (max-width: 480px) { .field-row { grid-template-columns: 1fr; } }
+.script-meta-line { display: flex; flex-wrap: wrap; gap: 6px; margin: 0 0 14px; }
+.mini-tag {
+  font-size: 0.72rem; font-weight: 600; color: var(--muted);
+  background: var(--paper-2); border: 1px solid var(--line);
+  padding: 2px 8px; border-radius: 999px;
+}

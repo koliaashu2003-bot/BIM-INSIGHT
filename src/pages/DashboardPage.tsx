@@ -69,10 +69,21 @@ export function DashboardPage() {
               <article key={u.id} className="script-card">
                 <div className="meta">
                   <span className="tag">{u.category}</span>
-                  <span className="tag badge-free">Yours</span>
+                  <span className={`tag ${u.status === 'approved' ? 'badge-free' : 'badge-soon'}`}>
+                    {u.status === 'approved' ? 'Published' : 'Pending review'}
+                  </span>
                 </div>
                 <h3>{u.title}</h3>
                 <p>{u.description || 'No description.'}</p>
+                {(u.dynamoVersion || u.revitVersion || u.tags.length > 0) && (
+                  <div className="script-meta-line">
+                    {u.dynamoVersion && <span className="mini-tag">Dynamo {u.dynamoVersion}</span>}
+                    {u.revitVersion && <span className="mini-tag">Revit {u.revitVersion}</span>}
+                    {u.tags.map((t) => (
+                      <span key={t} className="mini-tag">#{t}</span>
+                    ))}
+                  </div>
+                )}
                 <div className="script-foot">
                   <button type="button" className="link-btn" onClick={() => setUploads(removeUpload(u.id))}>
                     Delete

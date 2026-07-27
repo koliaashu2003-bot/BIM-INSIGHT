@@ -1,7 +1,7 @@
 import { useMemo, useState } from 'react'
 import { Link } from 'react-router-dom'
 import { SCRIPT_CATEGORIES, scripts, type ScriptCategory } from '../data/scripts'
-import { loadUploads } from '../utils/uploadsStore'
+import { loadApproved } from '../utils/uploadsStore'
 import { ScriptSocial } from '../components/ScriptSocial'
 
 const BASE = import.meta.env.BASE_URL
@@ -17,6 +17,9 @@ interface Row {
   href?: string // built-in file
   content?: string // user upload
   fileName?: string
+  tags?: string[]
+  dynamoVersion?: string
+  revitVersion?: string
 }
 
 function downloadContent(fileName: string, content: string) {
@@ -44,7 +47,7 @@ export function LibraryPage() {
       downloads: s.downloads,
       href: `${BASE}scripts/${s.file}`,
     }))
-    const uploads: Row[] = loadUploads().map((u) => ({
+    const uploads: Row[] = loadApproved().map((u) => ({
       id: u.id,
       title: u.title,
       description: u.description || 'Community-uploaded Dynamo graph.',
@@ -53,6 +56,9 @@ export function LibraryPage() {
       author: u.authorName,
       content: u.content,
       fileName: u.fileName,
+      tags: u.tags,
+      dynamoVersion: u.dynamoVersion,
+      revitVersion: u.revitVersion,
     }))
     return [...uploads, ...builtins]
   }, [])
@@ -104,6 +110,15 @@ export function LibraryPage() {
             </div>
             <h3>{s.title}</h3>
             <p>{s.description}</p>
+            {(s.dynamoVersion || s.revitVersion || (s.tags && s.tags.length > 0)) && (
+              <div className="script-meta-line">
+                {s.dynamoVersion && <span className="mini-tag">Dynamo {s.dynamoVersion}</span>}
+                {s.revitVersion && <span className="mini-tag">Revit {s.revitVersion}</span>}
+                {s.tags?.map((t) => (
+                  <span key={t} className="mini-tag">#{t}</span>
+                ))}
+              </div>
+            )}
             <div className="script-foot">
               <span className="script-author">
                 {s.language}

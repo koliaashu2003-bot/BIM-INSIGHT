@@ -1,0 +1,19 @@
+rules_version = '2';
+
+// Firebase Storage rules for uploaded .dyn files (when moving off the prototype).
+// Enforces: signed-in author only, .dyn content type, and a 5 MB size cap —
+// mirroring the client-side checks so limits are enforced server-side too.
+service firebase.storage {
+  match /b/{bucket}/o {
+    match /scripts/{userId}/{fileName} {
+      // Anyone may download a script file.
+      allow read: if true;
+
+      // Only the signed-in owner may upload, and only small .dyn files.
+      allow write: if request.auth != null
+                   && request.auth.uid == userId
+                   && fileName.matches('.*\\.dyn')
+                   && request.resource.size < 5 * 1024 * 1024;
+    }
+  }
+}
