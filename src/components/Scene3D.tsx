@@ -1,7 +1,6 @@
 import { Canvas, useFrame } from '@react-three/fiber'
 import { useMemo, useRef } from 'react'
 import * as THREE from 'three'
-import { useTheme } from '../context/ThemeContext'
 
 interface BuildingSpec {
   position: [number, number, number]
@@ -39,8 +38,7 @@ function Building({ spec, color }: { spec: BuildingSpec; color: string }) {
 
 function City() {
   const group = useRef<THREE.Group>(null)
-  const { theme } = useTheme()
-  const color = theme === 'dark' ? '#5eead4' : '#0f766e'
+  const color = '#2f6b4f'
 
   const buildings = useMemo(() => {
     const specs: BuildingSpec[] = []
