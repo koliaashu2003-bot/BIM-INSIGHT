@@ -14,12 +14,12 @@ export interface ScriptItem {
   category: ScriptCategory
   language: 'Python node' | 'DesignScript'
   file: string // relative to public/scripts/
-  downloads: number
   premium?: boolean
 }
 
-// Starter library. Replace/extend with real community scripts.
-// Files live in public/scripts/ and are served at <BASE_URL>scripts/<file>.
+// Starter library of Dynamo Python-node scripts (paste into a Python Script
+// node). Files live in public/scripts/ and are served at <BASE_URL>scripts/<file>.
+// Download counts are tracked live in downloadsStore, not baked in here.
 export const scripts: ScriptItem[] = [
   {
     id: 'rename-views',
@@ -30,7 +30,6 @@ export const scripts: ScriptItem[] = [
     category: 'Documentation',
     language: 'Python node',
     file: 'rename-views.py',
-    downloads: 128,
   },
   {
     id: 'rooms-to-list',
@@ -41,7 +40,6 @@ export const scripts: ScriptItem[] = [
     category: 'Data',
     language: 'Python node',
     file: 'rooms-to-list.py',
-    downloads: 96,
   },
   {
     id: 'place-family-at-grids',
@@ -52,7 +50,6 @@ export const scripts: ScriptItem[] = [
     category: 'Modeling',
     language: 'Python node',
     file: 'place-family-at-grids.py',
-    downloads: 74,
   },
   {
     id: 'set-wall-comments',
@@ -63,7 +60,6 @@ export const scripts: ScriptItem[] = [
     category: 'Data',
     language: 'Python node',
     file: 'set-wall-comments.py',
-    downloads: 61,
   },
   {
     id: 'sheet-index',
@@ -74,7 +70,6 @@ export const scripts: ScriptItem[] = [
     category: 'Documentation',
     language: 'Python node',
     file: 'sheet-index.py',
-    downloads: 52,
   },
   {
     id: 'unused-view-audit',
@@ -85,7 +80,6 @@ export const scripts: ScriptItem[] = [
     category: 'QA / Audit',
     language: 'Python node',
     file: 'unused-view-audit.py',
-    downloads: 88,
   },
 ]
 

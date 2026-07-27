@@ -22,6 +22,11 @@ export interface UploadedScript {
   createdAt: string
 }
 
+export const UPLOADS_CHANGED = 'bim:uploads-changed'
+function notify() {
+  window.dispatchEvent(new Event(UPLOADS_CHANGED))
+}
+
 export function loadUploads(): UploadedScript[] {
   try {
     const raw = JSON.parse(localStorage.getItem(KEY) || '[]') as Partial<UploadedScript>[]
@@ -55,18 +60,21 @@ export function addUpload(
   }
   const all = [item, ...loadUploads()]
   localStorage.setItem(KEY, JSON.stringify(all))
+  notify()
   return all
 }
 
 export function setUploadStatus(id: string, status: UploadStatus): UploadedScript[] {
   const all = loadUploads().map((u) => (u.id === id ? { ...u, status } : u))
   localStorage.setItem(KEY, JSON.stringify(all))
+  notify()
   return all
 }
 
 export function removeUpload(id: string): UploadedScript[] {
   const all = loadUploads().filter((u) => u.id !== id)
   localStorage.setItem(KEY, JSON.stringify(all))
+  notify()
   return all
 }
 

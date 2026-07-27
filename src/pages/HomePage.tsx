@@ -1,14 +1,11 @@
-import { lazy, Suspense } from 'react'
 import { Link } from 'react-router-dom'
 import { TOTAL_QUESTIONS } from '../data/questions'
 import { scripts } from '../data/scripts'
 import { useAuth } from '../context/AuthContext'
-
-const Scene3D = lazy(() => import('../components/Scene3D').then((m) => ({ default: m.Scene3D })))
+import { HeroArt } from '../components/HeroArt'
 
 export function HomePage() {
   const { user } = useAuth()
-  const totalDownloads = scripts.reduce((n, s) => n + s.downloads, 0)
 
   return (
     <main className="page">
@@ -19,8 +16,9 @@ export function HomePage() {
             The home for <em>Dynamo</em> scripts &amp; BIM know-how.
           </h1>
           <p>
-            Test your grip on the AEC software stack, then browse a growing library of ready-to-run
-            Dynamo scripts — download what you need, share what you build, from anywhere in the world.
+            Test your grip on the AEC software stack, then browse a growing library of Dynamo
+            Python-node scripts and community <code>.dyn</code> graphs — download what you need, share
+            what you build, from anywhere in the world.
           </p>
           <div className="hero-cta">
             {user ? (
@@ -38,9 +36,7 @@ export function HomePage() {
           </div>
         </div>
         <div className="hero-art reveal-2" aria-hidden="true">
-          <Suspense fallback={null}>
-            <Scene3D />
-          </Suspense>
+          <HeroArt />
         </div>
       </section>
 
@@ -51,11 +47,11 @@ export function HomePage() {
         </div>
         <div className="stat">
           <div className="stat-num">{scripts.length}</div>
-          <div className="stat-label">Scripts in the library</div>
+          <div className="stat-label">Starter scripts to download</div>
         </div>
         <div className="stat">
-          <div className="stat-num">{totalDownloads.toLocaleString()}</div>
-          <div className="stat-label">Downloads &amp; counting</div>
+          <div className="stat-num">.dyn</div>
+          <div className="stat-label">Upload &amp; share your own graphs</div>
         </div>
         <div className="stat">
           <div className="stat-num">Free</div>

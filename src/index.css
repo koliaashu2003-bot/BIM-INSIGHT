@@ -609,3 +609,22 @@ button { font: inherit; }
   background: var(--paper-2); border: 1px solid var(--line);
   padding: 2px 8px; border-radius: 999px;
 }
+
+/* ---------------- lightweight SVG hero (replaces three.js) ---------------- */
+.hero-svg {
+  width: 100%;
+  height: 100%;
+  display: block;
+  padding: 18px;
+}
+.hero-bldg {
+  transform-origin: center bottom;
+  animation: bldg-rise 0.9s cubic-bezier(0.22, 1, 0.36, 1) both;
+}
+@keyframes bldg-rise {
+  from { opacity: 0; transform: translateY(14px) scaleY(0.9); }
+  to { opacity: 1; transform: translateY(0) scaleY(1); }
+}
+@media (prefers-reduced-motion: reduce) {
+  .hero-bldg { animation: none; }
+}

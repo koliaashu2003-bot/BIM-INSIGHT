@@ -5,7 +5,4 @@ import react from '@vitejs/plugin-react'
 export default defineConfig({
   base: '/BIM-INSIGHT/',
   plugins: [react()],
-  build: {
-    chunkSizeWarningLimit: 900,
-  },
 })

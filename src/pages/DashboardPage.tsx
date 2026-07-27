@@ -2,6 +2,8 @@ import { useState } from 'react'
 import { Link } from 'react-router-dom'
 import { useAuth } from '../context/AuthContext'
 import { UploadDropzone } from '../components/UploadDropzone'
+import { AdminQueue } from '../components/AdminQueue'
+import { isAdminEmail } from '../config'
 import { loadUploads, removeUpload, type UploadedScript } from '../utils/uploadsStore'
 
 const BASE = import.meta.env.BASE_URL
@@ -97,6 +99,8 @@ export function DashboardPage() {
           </div>
         )}
       </section>
+
+      {isAdminEmail(user?.email) && <AdminQueue />}
 
       <p className="fine-print" style={{ marginTop: 24 }}>
         Note: this beta stores your account and uploads in this browser only. Multi-device accounts and
