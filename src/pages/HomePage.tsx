@@ -2,10 +2,12 @@ import { lazy, Suspense } from 'react'
 import { Link } from 'react-router-dom'
 import { TOTAL_QUESTIONS } from '../data/questions'
 import { scripts } from '../data/scripts'
+import { useAuth } from '../context/AuthContext'
 
 const Scene3D = lazy(() => import('../components/Scene3D').then((m) => ({ default: m.Scene3D })))
 
 export function HomePage() {
+  const { user } = useAuth()
   const totalDownloads = scripts.reduce((n, s) => n + s.downloads, 0)
 
   return (
@@ -21,11 +23,17 @@ export function HomePage() {
             Dynamo scripts — download what you need, share what you build, from anywhere in the world.
           </p>
           <div className="hero-cta">
-            <Link className="btn-primary btn-large" to="/quiz">
-              Take the quiz →
-            </Link>
-            <Link className="btn-ghost" to="/library">
-              Browse scripts
+            {user ? (
+              <Link className="btn-primary btn-large" to="/dashboard">
+                Go to dashboard →
+              </Link>
+            ) : (
+              <Link className="btn-primary btn-large" to="/auth">
+                Create free account →
+              </Link>
+            )}
+            <Link className="btn-ghost" to="/quiz">
+              Take the quiz
             </Link>
           </div>
         </div>
