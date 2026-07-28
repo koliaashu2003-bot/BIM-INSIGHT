@@ -1,101 +1,109 @@
+import { useMemo } from 'react'
 import { Link } from 'react-router-dom'
 import { TOTAL_QUESTIONS } from '../data/questions'
-import { scripts } from '../data/scripts'
-import { useAuth } from '../context/AuthContext'
+import { getLibraryRows } from '../utils/libraryData'
+import { ScriptCard } from '../components/ScriptCard'
 import { HeroArt } from '../components/HeroArt'
 
 export function HomePage() {
-  const { user } = useAuth()
+  const rows = useMemo(() => getLibraryRows(), [])
+  const featured = rows.slice(0, 6)
 
   return (
     <main className="page">
+      {/* Hero — marketplace value proposition */}
       <section className="hero">
         <div className="reveal">
-          <p className="eyebrow">Learn · Build · Share</p>
+          <p className="eyebrow">Dynamo script library for BIM</p>
           <h1>
-            The home for <em>Dynamo</em> scripts &amp; BIM know-how.
+            Download, share &amp; discover <em>Dynamo</em> scripts for real BIM workflows.
           </h1>
           <p>
-            Test your grip on the AEC software stack, then browse a growing library of Dynamo
-            Python-node scripts and community <code>.dyn</code> graphs — download what you need, share
-            what you build, from anywhere in the world.
+            A free, community library of Revit automation — Python-node scripts and{' '}
+            <code>.dyn</code> graphs for documentation, modelling, data and QA. Grab what you need,
+            upload what you build.
           </p>
           <div className="hero-cta">
-            {user ? (
-              <Link className="btn-primary btn-large" to="/dashboard">
-                Go to dashboard →
-              </Link>
-            ) : (
-              <Link className="btn-primary btn-large" to="/auth">
-                Create free account →
-              </Link>
-            )}
-            <Link className="btn-ghost" to="/quiz">
-              Take the quiz
+            <Link className="btn-primary btn-large" to="/library">
+              Browse scripts
+            </Link>
+            <Link className="btn-ghost" to="/share">
+              Share a script
             </Link>
           </div>
+          <p className="traction">
+            {rows.length} scripts available · community uploads welcome · built by a working BIM
+            engineer
+          </p>
         </div>
         <div className="hero-art reveal-2" aria-hidden="true">
           <HeroArt />
         </div>
       </section>
 
-      <section className="stat-row reveal-2">
-        <div className="stat">
-          <div className="stat-num">{TOTAL_QUESTIONS}</div>
-          <div className="stat-label">Quiz questions across 7 tools</div>
+      {/* Featured scripts — browsable content up front */}
+      <section className="reveal-2">
+        <div className="section-head">
+          <div>
+            <p className="eyebrow">Featured</p>
+            <h2 className="section-title">Scripts to grab right now</h2>
+          </div>
+          <Link className="see-all" to="/library">Browse all →</Link>
         </div>
-        <div className="stat">
-          <div className="stat-num">{scripts.length}</div>
-          <div className="stat-label">Starter scripts to download</div>
-        </div>
-        <div className="stat">
-          <div className="stat-num">.dyn</div>
-          <div className="stat-label">Upload &amp; share your own graphs</div>
-        </div>
-        <div className="stat">
-          <div className="stat-num">Free</div>
-          <div className="stat-label">During the beta</div>
+        <div className="script-grid">
+          {featured.map((row) => (
+            <ScriptCard key={row.id} row={row} />
+          ))}
         </div>
       </section>
 
-      <section className="reveal-3">
-        <p className="eyebrow">Why it exists</p>
-        <h2 className="section-title">One place to level up and to ship faster</h2>
-        <p className="section-lede">
-          BIM Insight brings together the two things every AEC professional needs: sharpening your
-          knowledge, and reusing proven automation instead of rebuilding it.
-        </p>
-        <div className="feature-grid">
-          <div className="feature">
-            <div className="feature-ico">🎯</div>
-            <h3>Timed quiz</h3>
-            <p>29 questions on Revit, AutoCAD, Navisworks, Rhino/Grasshopper, Dynamo, ACC &amp; add-ins.</p>
+      {/* How it works */}
+      <section className="reveal-3 howto">
+        <p className="eyebrow">How it works</p>
+        <h2 className="section-title">Three steps to running automation</h2>
+        <div className="steps">
+          <div className="step">
+            <span className="step-num">1</span>
+            <h3>Browse &amp; search</h3>
+            <p>Filter by category, Revit/Dynamo version, or keyword to find the script you need.</p>
           </div>
-          <div className="feature">
-            <div className="feature-ico">📦</div>
-            <h3>Script library</h3>
-            <p>Download Dynamo Python-node scripts for documentation, data, modeling and QA.</p>
+          <div className="step">
+            <span className="step-num">2</span>
+            <h3>Download</h3>
+            <p>Grab a <code>.dyn</code> graph or a Python-node script — free during the beta.</p>
           </div>
-          <div className="feature">
-            <div className="feature-ico">🌍</div>
-            <h3>Share worldwide</h3>
-            <p>Built something useful? Submit it so peers in any country can put it to work.</p>
-          </div>
-          <div className="feature">
-            <div className="feature-ico">✨</div>
-            <h3>Free now, premium later</h3>
-            <p>Everything is free during the beta. A curated premium tier is on the roadmap.</p>
+          <div className="step">
+            <span className="step-num">3</span>
+            <h3>Run in Dynamo</h3>
+            <p>Open the graph in Dynamo for Revit, or paste the Python into a Python Script node.</p>
           </div>
         </div>
       </section>
 
-      <section className="cta-band reveal-4">
-        <h2>Ready to test yourself?</h2>
-        <p>Five minutes, 29 questions, instant score with a shareable card.</p>
-        <Link className="btn-primary btn-large" to="/quiz">
-          Start the quiz
+      {/* Secondary: quiz teaser + contribute */}
+      <section className="dual-cta reveal-3">
+        <Link to="/quiz" className="dual-card">
+          <div className="feature-ico">🎯</div>
+          <h3>Test your knowledge</h3>
+          <p>A quick {TOTAL_QUESTIONS}-question quiz across Revit, Navisworks, Dynamo, ACC &amp; more.</p>
+          <span className="dual-link">Take the quiz →</span>
         </Link>
+        <Link to="/share" className="dual-card accent">
+          <div className="feature-ico">📤</div>
+          <h3>Share a script</h3>
+          <p>Built something useful? Upload it so peers anywhere can download it — with credit to you.</p>
+          <span className="dual-link">Contribute →</span>
+        </Link>
+      </section>
+
+      {/* Built by — credibility */}
+      <section className="builtby reveal-4">
+        <p className="eyebrow">Built by</p>
+        <p>
+          Made by a working BIM engineer for the AEC community, as part of{' '}
+          <strong>BIM Insight</strong>. Feedback and contributions keep it growing —{' '}
+          <Link to="/share">share a script</Link> or <Link to="/about">read the vision</Link>.
+        </p>
       </section>
     </main>
   )

@@ -20,20 +20,20 @@
     <link rel="icon" type="image/svg+xml" href="%BASE_URL%favicon.svg" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <meta name="theme-color" content="#0f766e" />
-    <title>BIM Insight — AEC quiz &amp; Dynamo script library</title>
+    <title>BIM Insight — Download &amp; share Dynamo scripts for Revit</title>
     <meta
       name="description"
-      content="Learn the AEC software stack with a timed quiz, then browse and download a growing library of Dynamo scripts. Free during the beta — share your own scripts too."
+      content="A free community library of Dynamo scripts and .dyn graphs for real BIM workflows — documentation, modelling, data and QA. Download what you need, upload what you build. Plus a quick AEC-software quiz."
     />
 
     <!-- Open Graph -->
     <meta property="og:type" content="website" />
     <meta property="og:site_name" content="BIM Insight" />
     <meta property="og:url" content="https://koliaashu2003-bot.github.io/BIM-INSIGHT/" />
-    <meta property="og:title" content="BIM Insight Quiz — Test your AEC software knowledge" />
+    <meta property="og:title" content="BIM Insight — Download &amp; share Dynamo scripts for Revit" />
     <meta
       property="og:description"
-      content="29 timed questions across Revit, AutoCAD, Navisworks, Rhino/Grasshopper, Dynamo, ACC / BIM 360, and popular add-ins. See how you score and share it."
+      content="A free community library of Dynamo scripts and .dyn graphs for real BIM workflows. Download what you need, share what you build."
     />
     <meta property="og:image" content="https://koliaashu2003-bot.github.io/BIM-INSIGHT/og-image.png" />
     <meta property="og:image:width" content="1200" />
@@ -41,15 +41,37 @@
 
     <!-- Twitter / X -->
     <meta name="twitter:card" content="summary_large_image" />
-    <meta name="twitter:title" content="BIM Insight Quiz — Test your AEC software knowledge" />
+    <meta name="twitter:title" content="BIM Insight — Download &amp; share Dynamo scripts for Revit" />
     <meta
       name="twitter:description"
-      content="29 timed questions across Revit, AutoCAD, Navisworks, Rhino/Grasshopper, Dynamo, ACC / BIM 360, and popular add-ins. See how you score and share it."
+      content="A free community library of Dynamo scripts and .dyn graphs for real BIM workflows. Download what you need, share what you build."
     />
     <meta name="twitter:image" content="https://koliaashu2003-bot.github.io/BIM-INSIGHT/og-image.png" />
   </head>
   <body>
-    <div id="root"></div>
+    <div id="root">
+      <!-- Static fallback so crawlers and no-JS visitors get the "what" instantly.
+           React replaces this once the app mounts. -->
+      <main style="max-width: 820px; margin: 0 auto; padding: 48px 20px; font-family: system-ui, sans-serif; color: #262019">
+        <p style="color: #2f6b4f; font-weight: 700; letter-spacing: 0.12em; text-transform: uppercase; font-size: 13px">
+          Dynamo script library for BIM
+        </p>
+        <h1 style="font-size: 34px; line-height: 1.15; margin: 8px 0 12px">
+          Download, share &amp; discover Dynamo scripts for real BIM workflows.
+        </h1>
+        <p style="font-size: 17px; color: #5b5344; max-width: 60ch">
+          BIM Insight is a free, community library of Revit automation — Python-node scripts and
+          .dyn graphs for documentation, modelling, data and QA. Browse and download what you need,
+          upload what you build, and test your knowledge with a quick AEC-software quiz.
+        </p>
+        <p style="margin-top: 20px">
+          <a href="./#/library" style="color: #1e4a37; font-weight: 700">Browse scripts</a> ·
+          <a href="./#/share" style="color: #1e4a37; font-weight: 700">Share a script</a> ·
+          <a href="./#/quiz" style="color: #1e4a37; font-weight: 700">Take the quiz</a>
+        </p>
+        <p style="margin-top: 24px; color: #766c5b">Loading the app…</p>
+      </main>
+    </div>
     <script type="module" src="/src/main.tsx"></script>
   </body>
 </html>
