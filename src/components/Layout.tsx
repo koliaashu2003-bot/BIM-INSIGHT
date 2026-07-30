@@ -15,34 +15,49 @@ const links = [
 export function Layout() {
   const { user } = useAuth()
   const [drawerOpen, setDrawerOpen] = useState(false)
+  const [menuOpen, setMenuOpen] = useState(false)
+
+  const close = () => setMenuOpen(false)
 
   return (
     <div className="site">
       <nav className="nav">
-        <Link className="nav-brand" to="/">
+        <Link className="nav-brand" to="/" onClick={close}>
           BIM<span>Insight</span>
         </Link>
-        <div className="nav-links">
-          {links.map((l) => (
-            <NavLink key={l.to} to={l.to} end={l.end}>
-              {l.label}
-            </NavLink>
-          ))}
+
+        <button
+          type="button"
+          className="nav-toggle"
+          onClick={() => setMenuOpen((o) => !o)}
+          aria-label="Toggle navigation menu"
+          aria-expanded={menuOpen}
+        >
+          <span /><span /><span />
+        </button>
+
+        <div className={`nav-collapse ${menuOpen ? 'open' : ''}`}>
+          <div className="nav-links">
+            {links.map((l) => (
+              <NavLink key={l.to} to={l.to} end={l.end} onClick={close}>
+                {l.label}
+              </NavLink>
+            ))}
+          </div>
+          {user ? (
+            <button
+              type="button"
+              className="nav-account"
+              onClick={() => { setDrawerOpen(true); close() }}
+            >
+              Account
+            </button>
+          ) : (
+            <Link className="btn-primary nav-cta" to="/auth" onClick={close}>
+              Sign in
+            </Link>
+          )}
         </div>
-        {user ? (
-          <button
-            type="button"
-            className="hamburger"
-            onClick={() => setDrawerOpen(true)}
-            aria-label="Open account menu"
-          >
-            <span /><span /><span />
-          </button>
-        ) : (
-          <Link className="btn-primary nav-cta" to="/auth">
-            Sign in
-          </Link>
-        )}
       </nav>
 
       <Outlet />
