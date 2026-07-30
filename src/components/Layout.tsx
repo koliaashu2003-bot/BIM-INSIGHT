@@ -1,6 +1,5 @@
 import { useState } from 'react'
 import { NavLink, Outlet, Link } from 'react-router-dom'
-import { useAuth } from '../context/AuthContext'
 import { AccountDrawer } from './AccountDrawer'
 import { FeedbackLink } from './FeedbackLink'
 
@@ -13,7 +12,6 @@ const links = [
 ]
 
 export function Layout() {
-  const { user } = useAuth()
   const [drawerOpen, setDrawerOpen] = useState(false)
   const [menuOpen, setMenuOpen] = useState(false)
 
@@ -44,19 +42,13 @@ export function Layout() {
               </NavLink>
             ))}
           </div>
-          {user ? (
-            <button
-              type="button"
-              className="nav-account"
-              onClick={() => { setDrawerOpen(true); close() }}
-            >
-              Account
-            </button>
-          ) : (
-            <Link className="btn-primary nav-cta" to="/auth" onClick={close}>
-              Sign in
-            </Link>
-          )}
+          <button
+            type="button"
+            className="nav-account"
+            onClick={() => { setDrawerOpen(true); close() }}
+          >
+            Account
+          </button>
         </div>
       </nav>
 

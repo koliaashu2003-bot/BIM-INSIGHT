@@ -11,8 +11,9 @@ const SESSION_KEY = 'bim:session'
 export interface UserProfile {
   id: string
   name: string
-  phone: string
+  phone?: string
   email: string
+  avatarUrl?: string
 }
 
 interface StoredUser extends UserProfile {
