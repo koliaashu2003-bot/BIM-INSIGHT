@@ -13,6 +13,14 @@ export const SUBMIT_EMAIL = 'koliaashu2003@gmail.com'
 // e.g. 'https://formspree.io/f/xxxxxxx'
 export const EMAIL_CAPTURE_URL = ''
 
+// --- Supabase (enables the "Continue with Google" button) -----------------
+// Create a free project at supabase.com, enable the Google provider, then paste
+// your Project URL and the anon PUBLIC key here (the anon key is safe to commit).
+// Until both are filled in, email/password sign-in still works but the Google
+// button stays disabled with a "setup pending" note.
+export const SUPABASE_URL = ''
+export const SUPABASE_ANON_KEY = ''
+
 // Emails allowed to see the moderation queue and approve/reject uploads.
 // (In the client prototype this is a convenience gate; real admin auth belongs
 // on the backend. Lower-cased for comparison.)
