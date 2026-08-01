@@ -1,18 +1,17 @@
 import { StrictMode } from 'react'
 import { createRoot } from 'react-dom/client'
-import { BrowserRouter } from 'react-router-dom'
+import { HashRouter } from 'react-router-dom'
 import '@fontsource-variable/fraunces'
 import './index.css'
 import App from './App.tsx'
 
-// Vite injects BASE_URL as '/BIM-INSIGHT/'; React Router wants it without the
-// trailing slash as the basename.
-const basename = import.meta.env.BASE_URL.replace(/\/$/, '')
-
+// HashRouter (URLs like /BIM-INSIGHT/#/library) so every link works when
+// clicked, pasted, shared or refreshed on GitHub Pages — no 404-redirect hack,
+// which was unreliable inside in-app browsers (WhatsApp, Instagram, etc.).
 createRoot(document.getElementById('root')!).render(
   <StrictMode>
-    <BrowserRouter basename={basename}>
+    <HashRouter>
       <App />
-    </BrowserRouter>
+    </HashRouter>
   </StrictMode>,
 )
