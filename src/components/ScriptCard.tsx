@@ -1,4 +1,4 @@
-import type { ReactNode } from 'react'
+import { useState, type ReactNode } from 'react'
 import { Link } from 'react-router-dom'
 import type { LibRow } from '../utils/libraryData'
 import { downloadRow } from '../utils/libraryData'
@@ -14,11 +14,21 @@ export function ScriptCard({
   children?: ReactNode
 }) {
   const count = getCount(row.id, 0)
+  const [busy, setBusy] = useState(false)
+  const [error, setError] = useState<string | null>(null)
 
-  function handleDownload() {
-    bumpCount(row.id)
-    downloadRow(row)
-    onDownloaded?.()
+  async function handleDownload() {
+    setBusy(true)
+    setError(null)
+    try {
+      await downloadRow(row)
+      bumpCount(row.id)
+      onDownloaded?.()
+    } catch (e) {
+      setError(e instanceof Error ? e.message : 'Download failed.')
+    } finally {
+      setBusy(false)
+    }
   }
 
   return (
@@ -45,10 +55,11 @@ export function ScriptCard({
         <span className="script-author">
           {count > 0 ? `${count.toLocaleString()} download${count > 1 ? 's' : ''}` : `by ${row.author}`}
         </span>
-        <button type="button" className="dl-btn" onClick={handleDownload}>
-          ↓ Download
+        <button type="button" className="dl-btn" onClick={handleDownload} disabled={busy}>
+          {busy ? 'Downloading…' : '↓ Download'}
         </button>
       </div>
+      {error && <p className="form-error" style={{ marginTop: 8 }}>{error}</p>}
       {children}
     </article>
   )

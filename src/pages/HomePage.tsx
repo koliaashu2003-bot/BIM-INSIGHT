@@ -1,12 +1,18 @@
-import { useMemo } from 'react'
+import { useEffect, useState } from 'react'
 import { Link } from 'react-router-dom'
 import { TOTAL_QUESTIONS } from '../data/questions'
-import { getLibraryRows } from '../utils/libraryData'
+import { fetchLibraryRows, getBuiltinRows, type LibRow } from '../utils/libraryData'
 import { ScriptCard } from '../components/ScriptCard'
 import { HeroArt } from '../components/HeroArt'
 
 export function HomePage() {
-  const rows = useMemo(() => getLibraryRows(), [])
+  // Show built-ins immediately, then fold in shared community uploads.
+  const [rows, setRows] = useState<LibRow[]>(() => getBuiltinRows())
+  useEffect(() => {
+    fetchLibraryRows()
+      .then(setRows)
+      .catch(() => setRows(getBuiltinRows()))
+  }, [])
   const featured = rows.slice(0, 6)
 
   return (

@@ -1,5 +1,5 @@
 import { scripts } from '../data/scripts'
-import { loadApproved } from './uploadsStore'
+import { listCommunityScripts, publicUrl, type CommunityScript } from '../services/scripts'
 
 const BASE = import.meta.env.BASE_URL
 
@@ -11,15 +11,15 @@ export interface LibRow {
   format: string // "Python node (.py)" or ".dyn graph"
   author: string
   isCommunity: boolean
-  href?: string // built-in file path
-  content?: string // user upload text
-  fileName?: string
+  downloadUrl: string // built-in file path OR Supabase public URL
+  fileName: string
   tags?: string[]
   dynamoVersion?: string
   revitVersion?: string
 }
 
-function builtins(): LibRow[] {
+/** The bundled starter scripts (always available, no backend needed). */
+export function getBuiltinRows(): LibRow[] {
   return scripts.map((s) => ({
     id: s.id,
     title: s.title,
@@ -28,49 +28,49 @@ function builtins(): LibRow[] {
     format: `${s.language} (.py)`,
     author: s.author,
     isCommunity: false,
-    href: `${BASE}scripts/${s.file}`,
+    downloadUrl: `${BASE}scripts/${s.file}`,
+    fileName: s.file,
   }))
 }
 
-function communityRows(): LibRow[] {
-  return loadApproved().map((u) => ({
-    id: u.id,
-    title: u.title,
-    description: u.description || 'Community-uploaded Dynamo graph.',
-    category: u.category,
+function communityToRow(s: CommunityScript): LibRow {
+  return {
+    id: s.id,
+    title: s.title,
+    description: s.description || 'Community-uploaded Dynamo graph.',
+    category: s.category,
     format: '.dyn graph',
-    author: u.authorName,
+    author: s.author_name,
     isCommunity: true,
-    content: u.content,
-    fileName: u.fileName,
-    tags: u.tags,
-    dynamoVersion: u.dynamoVersion,
-    revitVersion: u.revitVersion,
-  }))
-}
-
-/** Community uploads first (freshest), then the built-in starter set. */
-export function getLibraryRows(): LibRow[] {
-  return [...communityRows(), ...builtins()]
-}
-
-export function getLibraryRow(id: string): LibRow | undefined {
-  return getLibraryRows().find((r) => r.id === id)
-}
-
-export function downloadRow(row: LibRow) {
-  if (row.content && row.fileName) {
-    const blob = new Blob([row.content], { type: 'application/json' })
-    const url = URL.createObjectURL(blob)
-    const a = document.createElement('a')
-    a.href = url
-    a.download = row.fileName
-    a.click()
-    URL.revokeObjectURL(url)
-  } else if (row.href) {
-    const a = document.createElement('a')
-    a.href = row.href
-    a.download = ''
-    a.click()
+    downloadUrl: publicUrl(s.file_path),
+    fileName: s.file_path.replace(/^\d+-/, ''),
+    tags: s.tags ?? undefined,
+    dynamoVersion: s.dynamo_version ?? undefined,
+    revitVersion: s.revit_version ?? undefined,
   }
+}
+
+/** Community uploads (from Supabase) first, then the built-in starter set. */
+export async function fetchLibraryRows(): Promise<LibRow[]> {
+  const community = await listCommunityScripts()
+  return [...community.map(communityToRow), ...getBuiltinRows()]
+}
+
+/** Look up a single row by id (used by the detail page). */
+export async function fetchLibraryRow(id: string): Promise<LibRow | undefined> {
+  const rows = await fetchLibraryRows()
+  return rows.find((r) => r.id === id)
+}
+
+/** Download any row's file (built-in path or Supabase public URL) as a real file. */
+export async function downloadRow(row: LibRow): Promise<void> {
+  const res = await fetch(row.downloadUrl)
+  if (!res.ok) throw new Error('Download failed. Please try again.')
+  const blob = await res.blob()
+  const url = URL.createObjectURL(blob)
+  const a = document.createElement('a')
+  a.href = url
+  a.download = row.fileName || 'script'
+  a.click()
+  URL.revokeObjectURL(url)
 }

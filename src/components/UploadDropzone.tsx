@@ -1,14 +1,15 @@
 import { useRef, useState, type DragEvent } from 'react'
 import { useAuth } from '../context/AuthContext'
-import { addUpload, validateDyn } from '../utils/uploadsStore'
+import { validateDyn } from '../utils/uploadsStore'
+import { uploadCommunityScript } from '../services/scripts'
+import { isSupabaseReady } from '../lib/supabaseClient'
 import { SCRIPT_CATEGORIES } from '../data/scripts'
 
 export function UploadDropzone({ onUploaded }: { onUploaded?: () => void }) {
   const { user } = useAuth()
   const inputRef = useRef<HTMLInputElement>(null)
   const [dragging, setDragging] = useState(false)
-  const [fileName, setFileName] = useState('')
-  const [content, setContent] = useState('')
+  const [file, setFile] = useState<File | null>(null)
   const [title, setTitle] = useState('')
   const [category, setCategory] = useState(SCRIPT_CATEGORIES[0] as string)
   const [description, setDescription] = useState('')
@@ -17,59 +18,63 @@ export function UploadDropzone({ onUploaded }: { onUploaded?: () => void }) {
   const [tags, setTags] = useState('')
   const [error, setError] = useState<string | null>(null)
   const [message, setMessage] = useState<string | null>(null)
+  const [busy, setBusy] = useState(false)
 
-  function acceptFile(file: File) {
+  function acceptFile(f: File) {
     setError(null)
     setMessage(null)
     const reader = new FileReader()
     reader.onload = () => {
-      const text = String(reader.result || '')
-      const check = validateDyn(file.name, file.size, text)
+      const check = validateDyn(f.name, f.size, String(reader.result || ''))
       if (!check.ok) {
         setError(check.error)
-        setFileName('')
-        setContent('')
+        setFile(null)
         return
       }
-      setContent(text)
-      setFileName(file.name)
-      if (!title) setTitle(file.name.replace(/\.dyn$/i, ''))
+      setFile(f)
+      if (!title) setTitle(f.name.replace(/\.dyn$/i, ''))
     }
-    reader.readAsText(file)
+    reader.readAsText(f)
   }
 
   function onDrop(e: DragEvent) {
     e.preventDefault()
     setDragging(false)
-    const file = e.dataTransfer.files?.[0]
-    if (file) acceptFile(file)
+    const f = e.dataTransfer.files?.[0]
+    if (f) acceptFile(f)
   }
 
-  function submit() {
-    if (!user) return
+  async function submit() {
     setMessage(null)
-    if (!content || !fileName) return setError('Drop or choose a valid .dyn file first.')
+    setError(null)
+    if (!isSupabaseReady) return setError('The upload backend is not set up yet. Please try again later.')
+    if (!file) return setError('Drop or choose a valid .dyn file first.')
     if (!title.trim()) return setError('Give your script a title.')
     if (!description.trim()) return setError('Add a short description.')
     if (!dynamoVersion.trim()) return setError('Add the Dynamo version.')
     if (!revitVersion.trim()) return setError('Add the Revit version.')
 
-    addUpload({
-      title: title.trim(),
-      description: description.trim(),
-      category,
-      tags: tags.split(',').map((t) => t.trim()).filter(Boolean),
-      dynamoVersion: dynamoVersion.trim(),
-      revitVersion: revitVersion.trim(),
-      fileName,
-      content,
-      authorId: user.id,
-      authorName: user.name,
-    })
-    setFileName(''); setContent(''); setTitle(''); setDescription('')
-    setDynamoVersion(''); setRevitVersion(''); setTags(''); setError(null)
-    setMessage('Uploaded! It’s now pending review before it appears in the public library.')
-    onUploaded?.()
+    setBusy(true)
+    try {
+      await uploadCommunityScript({
+        file,
+        title: title.trim(),
+        description: description.trim(),
+        category,
+        authorName: user?.name || 'Anonymous',
+        dynamoVersion: dynamoVersion.trim(),
+        revitVersion: revitVersion.trim(),
+        tags: tags.split(',').map((t) => t.trim()).filter(Boolean),
+      })
+      setFile(null); setTitle(''); setDescription('')
+      setDynamoVersion(''); setRevitVersion(''); setTags('')
+      setMessage('Uploaded! Your script is now live in the community library for everyone.')
+      onUploaded?.()
+    } catch (e) {
+      setError(e instanceof Error ? e.message : 'Upload failed. Please try again.')
+    } finally {
+      setBusy(false)
+    }
   }
 
   return (
@@ -91,8 +96,8 @@ export function UploadDropzone({ onUploaded }: { onUploaded?: () => void }) {
           onChange={(e) => e.target.files?.[0] && acceptFile(e.target.files[0])}
         />
         <div className="dropzone-ico">⬆</div>
-        {fileName ? (
-          <p><strong>{fileName}</strong> validated ✓</p>
+        {file ? (
+          <p><strong>{file.name}</strong> validated ✓</p>
         ) : (
           <p>Drag &amp; drop a <strong>.dyn</strong> file here, or click to browse (max 5 MB)</p>
         )}
@@ -130,7 +135,9 @@ export function UploadDropzone({ onUploaded }: { onUploaded?: () => void }) {
       </label>
 
       {error && <p className="form-error">{error}</p>}
-      <button type="button" className="btn-primary" onClick={submit}>Upload script</button>
+      <button type="button" className="btn-primary" onClick={submit} disabled={busy}>
+        {busy ? 'Uploading…' : 'Upload script'}
+      </button>
       {message && <p className="form-note" style={{ marginTop: 10 }}>{message}</p>}
     </div>
   )

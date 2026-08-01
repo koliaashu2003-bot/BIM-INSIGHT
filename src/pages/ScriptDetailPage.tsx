@@ -1,13 +1,34 @@
+import { useEffect, useState } from 'react'
 import { Link, useParams } from 'react-router-dom'
-import { getLibraryRow, downloadRow } from '../utils/libraryData'
+import { fetchLibraryRow, downloadRow, type LibRow } from '../utils/libraryData'
 import { bumpCount, getCount } from '../utils/downloadsStore'
 import { ScriptSocial } from '../components/ScriptSocial'
-import { useState } from 'react'
 
 export function ScriptDetailPage() {
   const { id = '' } = useParams()
-  const row = getLibraryRow(id)
+  const [row, setRow] = useState<LibRow | null>(null)
+  const [loading, setLoading] = useState(true)
+  const [busy, setBusy] = useState(false)
+  const [error, setError] = useState<string | null>(null)
   const [count, setCount] = useState(() => getCount(id, 0))
+
+  useEffect(() => {
+    let alive = true
+    setLoading(true)
+    fetchLibraryRow(id)
+      .then((r) => { if (alive) setRow(r ?? null) })
+      .catch(() => { if (alive) setRow(null) })
+      .finally(() => { if (alive) setLoading(false) })
+    return () => { alive = false }
+  }, [id])
+
+  if (loading) {
+    return (
+      <main className="page">
+        <p className="section-lede reveal"><span className="spinner" style={{ verticalAlign: '-2px', marginRight: 8 }} />Loading…</p>
+      </main>
+    )
+  }
 
   if (!row) {
     return (
@@ -20,9 +41,17 @@ export function ScriptDetailPage() {
     )
   }
 
-  function handleDownload() {
-    setCount(bumpCount(row!.id))
-    downloadRow(row!)
+  async function handleDownload() {
+    setBusy(true)
+    setError(null)
+    try {
+      await downloadRow(row!)
+      setCount(bumpCount(row!.id))
+    } catch (e) {
+      setError(e instanceof Error ? e.message : 'Download failed.')
+    } finally {
+      setBusy(false)
+    }
   }
 
   return (
@@ -32,17 +61,16 @@ export function ScriptDetailPage() {
       </p>
 
       <div className="detail-head reveal">
-        <div>
-          <div className="meta" style={{ marginBottom: 10 }}>
-            <span className="tag">{row.category}</span>
-            <span className="tag badge-free">{row.isCommunity ? 'Community' : 'Free'}</span>
-          </div>
-          <h1 className="section-title" style={{ marginBottom: 10 }}>{row.title}</h1>
-          <p className="section-lede" style={{ marginBottom: 16 }}>{row.description}</p>
-          <button type="button" className="btn-primary btn-large" onClick={handleDownload}>
-            ↓ Download {row.format.includes('.py') ? '.py' : '.dyn'}
-          </button>
+        <div className="meta" style={{ marginBottom: 10 }}>
+          <span className="tag">{row.category}</span>
+          <span className="tag badge-free">{row.isCommunity ? 'Community' : 'Free'}</span>
         </div>
+        <h1 className="section-title" style={{ marginBottom: 10 }}>{row.title}</h1>
+        <p className="section-lede" style={{ marginBottom: 16 }}>{row.description}</p>
+        <button type="button" className="btn-primary btn-large" onClick={handleDownload} disabled={busy}>
+          {busy ? 'Downloading…' : `↓ Download ${row.format.includes('.py') ? '.py' : '.dyn'}`}
+        </button>
+        {error && <p className="form-error" style={{ marginTop: 10 }}>{error}</p>}
       </div>
 
       <div className="detail-grid reveal-2">

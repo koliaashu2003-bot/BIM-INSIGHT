@@ -1,25 +1,38 @@
 import { useEffect, useMemo, useState } from 'react'
 import { Link } from 'react-router-dom'
 import { SCRIPT_CATEGORIES, type ScriptCategory } from '../data/scripts'
-import { UPLOADS_CHANGED } from '../utils/uploadsStore'
-import { getLibraryRows, type LibRow } from '../utils/libraryData'
+import { fetchLibraryRows, getBuiltinRows, type LibRow } from '../utils/libraryData'
 import { ScriptCard } from '../components/ScriptCard'
 import { ScriptSocial } from '../components/ScriptSocial'
 
 export function LibraryPage() {
   const [query, setQuery] = useState('')
   const [category, setCategory] = useState<ScriptCategory | 'All'>('All')
-  const [rows, setRows] = useState<LibRow[]>(() => getLibraryRows())
-  const [tick, setTick] = useState(0)
+  // Start with the built-in scripts so something shows instantly, then load
+  // the shared community scripts from Supabase.
+  const [rows, setRows] = useState<LibRow[]>(() => getBuiltinRows())
+  const [loading, setLoading] = useState(true)
+  const [error, setError] = useState<string | null>(null)
+
+  async function load() {
+    setLoading(true)
+    setError(null)
+    try {
+      setRows(await fetchLibraryRows())
+    } catch (e) {
+      setError(e instanceof Error ? e.message : 'Could not load the community library.')
+      setRows(getBuiltinRows()) // fall back to built-ins
+    } finally {
+      setLoading(false)
+    }
+  }
 
   useEffect(() => {
-    const refresh = () => setRows(getLibraryRows())
-    window.addEventListener(UPLOADS_CHANGED, refresh)
-    window.addEventListener('focus', refresh)
-    return () => {
-      window.removeEventListener(UPLOADS_CHANGED, refresh)
-      window.removeEventListener('focus', refresh)
-    }
+    void load()
+    const onFocus = () => void load()
+    window.addEventListener('focus', onFocus)
+    return () => window.removeEventListener('focus', onFocus)
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [])
 
   const filtered = useMemo(() => {
@@ -40,14 +53,13 @@ export function LibraryPage() {
       <p className="eyebrow reveal">Script Library</p>
       <h1 className="section-title reveal">Browse Dynamo scripts &amp; graphs</h1>
       <p className="section-lede reveal">
-        Free during the beta — <Link to="/share">share your own</Link> or{' '}
-        <Link to="/auth">sign in</Link> to upload, like, rate and comment.
+        Free during the beta — <Link to="/share">share your own</Link> to add to the community library.
       </p>
 
       <div className="callout reveal-2" style={{ maxWidth: 760 }}>
         Two formats: <strong>Python-node scripts</strong> (<code>.py</code> — paste into a Dynamo
         Python Script node) and community <strong><code>.dyn</code> graphs</strong> you can open
-        directly in Dynamo. Each card shows its format; click a title for full details.
+        directly in Dynamo. Community uploads are shared with everyone. Click a title for full details.
       </div>
 
       <div className="filter-row reveal-2">
@@ -69,11 +81,23 @@ export function LibraryPage() {
         ))}
       </div>
 
-      <p className="result-count reveal-2">{filtered.length} script{filtered.length !== 1 ? 's' : ''}</p>
+      <p className="result-count reveal-2">
+        {loading ? (
+          <><span className="spinner" style={{ verticalAlign: '-2px', marginRight: 8 }} />Loading community scripts…</>
+        ) : (
+          `${filtered.length} script${filtered.length !== 1 ? 's' : ''}`
+        )}
+      </p>
 
-      <div className="script-grid reveal-2" key={tick}>
+      {error && (
+        <p className="form-error" style={{ marginBottom: 16 }}>
+          {error} <button type="button" className="link-btn" onClick={() => void load()}>Retry</button>
+        </p>
+      )}
+
+      <div className="script-grid reveal-2">
         {filtered.map((row) => (
-          <ScriptCard key={row.id} row={row} onDownloaded={() => setTick((t) => t + 1)}>
+          <ScriptCard key={row.id} row={row}>
             <ScriptSocial scriptId={row.id} />
           </ScriptCard>
         ))}
@@ -92,7 +116,7 @@ export function LibraryPage() {
         </article>
       </div>
 
-      {filtered.length === 0 && (
+      {!loading && filtered.length === 0 && (
         <p className="section-lede" style={{ marginTop: 24 }}>No scripts match that search yet.</p>
       )}
     </main>

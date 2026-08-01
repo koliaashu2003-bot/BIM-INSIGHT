@@ -13,6 +13,14 @@ export const SUBMIT_EMAIL = 'koliaashu2003@gmail.com'
 // e.g. 'https://formspree.io/f/xxxxxxx'
 export const EMAIL_CAPTURE_URL = ''
 
+// --- Supabase backend (real, shared community library) --------------------
+// Create a free project at supabase.com, then paste your Project URL and the
+// anon PUBLIC key here (the anon key is safe to commit — it's public by design;
+// security is enforced by Row-Level Security policies). Until both are set, the
+// library shows only the built-in starter scripts and uploading is disabled.
+export const SUPABASE_URL = ''
+export const SUPABASE_ANON_KEY = ''
+
 // Emails allowed to see the moderation queue and approve/reject uploads.
 // (In the client prototype this is a convenience gate; real admin auth belongs
 // on the backend. Lower-cased for comparison.)
